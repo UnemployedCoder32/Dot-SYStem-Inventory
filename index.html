@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Computer Parts Inventory - Tally Export</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="app-icon.png">
+</head>
+<body>
+    <!-- Password Protection Overlay -->
+    <div id="auth-overlay">
+        <div class="auth-box glass-card">
+            <h2><i class="fa-solid fa-lock text-cyan"></i> Inventory Hub</h2>
+            <p style="color: var(--text-muted); margin-bottom: 2rem;">Please enter the password to access Hardware Sync Inventory.</p>
+            
+            <form id="auth-form">
+                <input type="password" id="auth-password" placeholder="••••••••" required autocomplete="current-password">
+                <div id="auth-error">Incorrect password. Access denied.</div>
+                
+                <button type="submit" class="btn btn-primary w-full" style="padding: 1rem; font-size: 1.1rem;">
+                    <i class="fa-solid fa-key"></i> Unlock Dashboard
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="background-effect"></div>
+    <div class="background-effect effect-2"></div>
+    
+    <div class="container">
+        <header>
+            <div class="header-title">
+                <h1><i class="fa-solid fa-microchip"></i> Hardware Sync</h1>
+                <p>Computer Parts Inventory & Tally Prime Bridge</p>
+            </div>
+            <div class="header-actions">
+                <div class="action-group">
+                    <a href="repair-jobs.html" class="btn btn-outline nav-btn">
+                        <i class="fa-solid fa-screwdriver-wrench"></i> <span>Repairs</span>
+                    </a>
+                    <a href="employees.html" class="btn btn-outline nav-btn">
+                        <i class="fa-solid fa-users"></i> <span>Staff</span>
+                    </a>
+                    <a href="amc-management.html" class="btn btn-outline nav-btn">
+                        <i class="fa-solid fa-building-shield"></i> <span>AMC</span>
+                    </a>
+                </div>
+
+                <div class="sync-toolset glass-card">
+                    <div class="sync-label">Tally Sync</div>
+                    <div class="sync-buttons">
+                        <button id="importTallyBtn" class="btn-sync" title="Import from Tally">
+                            <i class="fa-solid fa-arrow-down-long"></i>
+                        </button>
+                        <input type="file" id="importTallyInput" accept=".xml" style="display: none;">
+                        <button id="exportBtn" class="btn-sync" title="Export Masters" disabled>
+                            <i class="fa-solid fa-cube"></i>
+                        </button>
+                        <button id="exportVoucherBtn" class="btn-sync accent" title="Export Voucher" disabled>
+                            <i class="fa-solid fa-file-invoice"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="main-content">
+            <section class="add-item-section glass-card">
+                <h2><i class="fa-solid fa-plus-circle"></i> Add New Part</h2>
+                <form id="inventoryForm">
+                    <div class="form-group">
+                        <label for="partName">Part Name/Model</label>
+                        <input type="text" id="partName" placeholder="e.g. NVIDIA RTX 4090" required>
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group flex-1">
+                            <label for="quantity">Quantity (Nos)</label>
+                            <input type="number" id="quantity" min="1" placeholder="e.g. 10" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="minStock">Minimum Stock</label>
+                            <input type="number" id="minStock" min="0" placeholder="e.g. 5" required>
+                        </div>
+                        <div class="form-group flex-1">
+                            <label for="price">Price per Unit (₹)</label>
+                            <input type="number" id="price" min="0" step="0.01" placeholder="e.g. 150000" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-accent w-full">
+                        <i class="fa-solid fa-plus"></i> Add to Inventory
+                    </button>
+                </form>
+            </section>
+
+            <section class="insights-bar fade-in">
+                <div class="insights-grid">
+                    <div class="insight-card glass-card">
+                        <div class="insight-icon" style="background: rgba(59, 130, 246, 0.1); color: var(--primary);">
+                            <i class="fa-solid fa-boxes-stacked"></i>
+                        </div>
+                        <div class="insight-details">
+                            <span class="insight-label">Total Unique Items</span>
+                            <h3 id="statTotalItems">0</h3>
+                        </div>
+                    </div>
+                    <div class="insight-card glass-card">
+                        <div class="insight-icon" style="background: rgba(245, 158, 11, 0.1); color: #f59e0b;">
+                            <i class="fa-solid fa-indian-rupee-sign"></i>
+                        </div>
+                        <div class="insight-details">
+                            <span class="insight-label">Inventory Value</span>
+                            <h3 id="statTotalValue">₹0.00</h3>
+                        </div>
+                    </div>
+                    <div class="insight-card glass-card">
+                        <div class="insight-icon" id="healthIconBox" style="background: rgba(16, 185, 129, 0.1); color: #10b981;">
+                            <i class="fa-solid fa-heart-pulse"></i>
+                        </div>
+                        <div class="insight-details">
+                            <span class="insight-label">Stock Health</span>
+                            <h3 id="statStockHealth">100%</h3>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section class="inventory-list-section glass-card">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-boxes-stacked"></i> Current Stock</h2>
+                    <span id="totalItems" class="badge">0 Items</span>
+                </div>
+                
+                <div class="table-container">
+                    <table id="inventoryTable">
+                        <thead>
+                            <tr>
+                                <th>Part Name</th>
+                                <th>Qty</th>
+                                <th>Rate (₹)</th>
+                                <th>Value (₹)</th>
+                                <th>Status</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="inventoryList">
+                            <tr id="emptyState" class="empty-state">
+                                <td colspan="6">
+                                    <div class="empty-content">
+                                        <i class="fa-solid fa-box-open"></i>
+                                        <p>No parts added yet. Enter details above to begin.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                        <tfoot id="inventoryFooter" style="display: none;">
+                            <tr>
+                                <td colspan="3" class="text-right"><strong>Total Value:</strong></td>
+                                <td id="totalValue"><strong>0.00</strong></td>
+                                <td colspan="2"></td>
+                            </tr>
+                        </tfoot>
+                    </table>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker Registered'))
+                    .catch(err => console.log('Service Worker Registration Failed', err));
+            });
+        }
+    </script>
+</body>
+</html>

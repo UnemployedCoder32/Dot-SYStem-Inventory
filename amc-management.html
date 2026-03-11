@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AMC Management | Tally Sync</title>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- PWA Meta Tags -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#3b82f6">
+    <link rel="apple-touch-icon" href="app-icon.png">
+    
+    <style>
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .form-grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        textarea:focus { border-color: var(--primary); }
+
+        select {
+            width: 100%;
+            padding: 0.875rem 1rem;
+            background: rgba(15, 23, 42, 0.6);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            color: #fff;
+            appearance: none;
+            outline: none;
+        }
+
+        @media (max-width: 1000px) {
+            .dashboard-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+    <div class="background-effect"></div>
+    <div class="background-effect effect-2"></div>
+    
+    <div class="container" style="max-width: 1500px;">
+        <header>
+            <div class="header-title">
+                <h1><i class="fa-solid fa-building-shield text-cyan"></i> AMC Management</h1>
+                <p>Manage B2B service contracts and maintenance schedules.</p>
+            </div>
+            <div style="display: flex; gap: 1rem;">
+                <a href="index.html" class="btn btn-outline" style="border: 1px solid var(--accent); color: var(--text-main); text-decoration: none;">
+                    <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+                </a>
+            </div>
+        </header>
+
+        <main class="dashboard-grid">
+            <!-- Left: Entry Form -->
+            <section class="forms-col">
+                <div class="glass-card">
+                    <h2><i class="fa-solid fa-file-contract"></i> New AMC Entry</h2>
+                    <form id="amcForm">
+                        <div class="form-group">
+                            <label for="orgName">Organization Name</label>
+                            <input type="text" id="orgName" placeholder="e.g. HDFC Bank Ltd" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="contactPerson">Contact Person & Phone</label>
+                            <input type="text" id="contactPerson" placeholder="e.g. Rahul Sharma - 9876543210" required>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="startDate">Start Date</label>
+                                <input type="date" id="startDate" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="endDate">End Date</label>
+                                <input type="date" id="endDate" required>
+                            </div>
+                        </div>
+                        <div class="form-grid-2">
+                            <div class="form-group">
+                                <label for="payCycle">Payment Cycle</label>
+                                <select id="payCycle" required>
+                                    <option value="Monthly">Monthly</option>
+                                    <option value="Quarterly">Quarterly</option>
+                                    <option value="Half-Yearly">Half-Yearly</option>
+                                    <option value="Annually" selected>Annually</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="amcType">AMC Type</label>
+                                <select id="amcType" required>
+                                    <option value="Comprehensive">Comprehensive (Parts)</option>
+                                    <option value="Non-Comprehensive">Non-Comprehensive (Labor)</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="amcAmount">Contract Amount (₹)</label>
+                            <input type="number" id="amcAmount" placeholder="e.g. 50000" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="assetList">Asset List (PCs/Printers Serial Nos)</label>
+                            <textarea id="assetList" placeholder="e.g. Dell S/N: 12345, HP Printer S/N: 6789..."></textarea>
+                        </div>
+                        <button type="submit" class="btn btn-primary w-full" style="margin-top: 1rem;">
+                            <i class="fa-solid fa-plus-circle"></i> Activate AMC
+                        </button>
+                    </form>
+                </div>
+            </section>
+
+            <!-- Right: Active Contracts Cards -->
+            <section class="amc-list-section">
+                <div class="section-header">
+                    <h2><i class="fa-solid fa-shield-halved"></i> Active Contracts</h2>
+                    <span id="totalAmcs" class="badge">0 Active</span>
+                </div>
+                
+                <div id="amcGrid" class="amc-grid">
+                    <!-- Cards will be injected here -->
+                    <div id="emptyAmc" class="glass-card" style="grid-column: 1/-1; text-align: center; padding: 4rem;">
+                        <i class="fa-solid fa-folder-open" style="font-size: 3rem; color: var(--text-muted); margin-bottom: 1rem;"></i>
+                        <p style="color: var(--text-muted);">No active AMC contracts found.</p>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script src="amc-script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js');
+            });
+        }
+    </script>
+</body>
+</html>
