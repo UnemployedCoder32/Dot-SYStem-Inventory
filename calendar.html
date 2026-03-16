@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Business Calendar | DOT System</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background: var(--border);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid var(--border);
+        }
+        .calendar-day {
+            background: var(--card-bg);
+            min-height: 120px;
+            padding: 0.75rem;
+            transition: all 0.3s ease;
+        }
+        .calendar-day.today {
+            background: rgba(59, 130, 246, 0.1);
+        }
+        .calendar-header-day {
+            background: rgba(15, 23, 42, 0.8);
+            padding: 1rem;
+            text-align: center;
+            font-weight: 600;
+            color: var(--accent);
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 1px;
+        }
+        .day-number {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            opacity: 0.5;
+        }
+        .today .day-number {
+            color: var(--primary);
+            opacity: 1;
+        }
+        .event-dot {
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            margin-bottom: 0.25rem;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            cursor: pointer;
+        }
+        
+        .calendar-nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Premium Preloader -->
+    <div class="preloader-overlay" id="preloader">
+        <div class="loader-container">
+            <svg class="loader-svg" viewBox="0 0 100 100">
+                <path class="trace-bg" d="M10 50 L90 50 M50 10 L50 90 M25 25 L75 75 M75 25 L25 75" />
+                <path class="trace-flow cyan-trace" d="M10 50 L90 50" style="animation-delay: -0.5s;" />
+                <path class="trace-flow blue-trace" d="M50 10 L50 90" style="animation-delay: -1.2s;" />
+                <path class="trace-flow cyan-trace" d="M25 25 L75 75" style="animation-delay: -0.8s;" />
+                <rect class="chip-body" x="30" y="35" width="40" height="30" />
+                <text x="50" y="52" text-anchor="middle" class="chip-text">PLAN</text>
+            </svg>
+            <div class="loader-tag">Mapping Timeline</div>
+        </div>
+    </div>
+
+    <div class="background-effect"></div>
+    
+    <div class="container" style="max-width: 1400px;">
+        <header>
+            <div class="header-main">
+                <div class="header-title">
+                    <h1><i class="fa-solid fa-calendar-days text-cyan"></i> Business Calendar</h1>
+                    <p>Timeline for deliveries, AMC visits, and renewals.</p>
+                </div>
+                
+                <nav class="header-nav">
+                    <a href="index.html" class="nav-btn-alt" title="Dashboard">
+                        <i class="fa-solid fa-house"></i>
+                        <span>Home</span>
+                    </a>
+                    <a href="transactions.html" class="nav-btn-alt" title="Transaction Ledger">
+                        <i class="fa-solid fa-receipt"></i>
+                        <span>Transactions</span>
+                    </a>
+                    <a href="repair-jobs.html" class="nav-btn-alt" title="Repairs">
+                        <i class="fa-solid fa-screwdriver-wrench"></i>
+                        <span>Repairs</span>
+                    </a>
+                    <a href="employees.html" class="nav-btn-alt" title="Staff Management">
+                        <i class="fa-solid fa-users"></i>
+                        <span>Staff</span>
+                    </a>
+                    <a href="amc-management.html" class="nav-btn-alt" title="AMC Management">
+                        <i class="fa-solid fa-building-shield"></i>
+                        <span>AMC</span>
+                    </a>
+                    <a href="service-visits.html" class="nav-btn-alt" title="Service Visits">
+                        <i class="fa-solid fa-car-side"></i>
+                        <span>Visits</span>
+                    </a>
+                </nav>
+            </div>
+
+            <div class="header-system">
+                <div class="system-tools">
+                    <div class="theme-switch-wrapper">
+                        <label class="switch" title="Toggle Light/Dark Mode">
+                            <input type="checkbox" id="themeCheckbox">
+                            <span class="slider">
+                                <span class="star star_1"></span>
+                                <span class="star star_2"></span>
+                                <span class="star star_3"></span>
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" class="cloud">
+                                    <path d="M17.5,19c-3.037,0-5.5-2.463-5.5-5.5c0-0.08,0.002-0.16,0.006-0.24C11.391,13.042,10.71,13,10,13c-2.761,0-5,2.239-5,5s2.239,5,5,5h7.5c2.485,0,4.5-2.015,4.5-4.5S19.985,14,17.5,14c-0.198,0-0.392,0.013-0.582,0.038C16.962,14.013,17,14,17,14c0-2.209-1.791-4-4-4c-0.246,0-0.485,0.022-0.717,0.065C12.115,10.023,12,10,12,10c-2.761,0-5,2.239-5,5c0,0.113,0.005,0.224,0.014,0.334C6.425,15.131,5.748,15,5,15c-2.209,0-4,1.791-4,4s1.791,4,4,4H17.5z"></path>
+                                </svg>
+                            </span>
+                        </label>
+                    </div>
+                    <!-- Bell placeholder if needed or just toggle -->
+                </div>
+            </div>
+        </header>
+
+        <section class="glass-card fade-in" style="padding: 2rem;">
+            <div class="calendar-nav">
+                <h2 id="currentMonthYear">March 2026</h2>
+                <div style="display: flex; gap: 0.5rem;">
+                    <button class="btn btn-outline" onclick="prevMonth()"><i class="fa-solid fa-chevron-left"></i></button>
+                    <button class="btn btn-outline" onclick="nextMonth()"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>
+            </div>
+
+            <div class="calendar-grid" id="calendarGrid">
+                <!-- Headers -->
+                <div class="calendar-header-day">Sun</div>
+                <div class="calendar-header-day">Mon</div>
+                <div class="calendar-header-day">Tue</div>
+                <div class="calendar-header-day">Wed</div>
+                <div class="calendar-header-day">Thu</div>
+                <div class="calendar-header-day">Fri</div>
+                <div class="calendar-header-day">Sat</div>
+                
+                <!-- Days will be injected here -->
+            </div>
+        </section>
+    </div>
+
+    <script src="notifications.js"></script>
+    <script src="transitions.js"></script>
+    <script src="theme-system.js"></script>
+    <script>
+        let currentMonth = new Date().getMonth();
+        let currentYear = new Date().getFullYear();
+
+        function renderCalendar() {
+            const grid = document.getElementById('calendarGrid');
+            const monthYearLabel = document.getElementById('currentMonthYear');
+            
+            // Clear existing days
+            const headers = grid.querySelectorAll('.calendar-header-day');
+            grid.innerHTML = '';
+            headers.forEach(h => grid.appendChild(h));
+
+            const firstDay = new Date(currentYear, currentMonth, 1).getDay();
+            const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
+            const monthName = new Date(currentYear, currentMonth).toLocaleString('default', { month: 'long' });
+            
+            monthYearLabel.textContent = `${monthName} ${currentYear}`;
+
+            // Get Data
+            const repairs = JSON.parse(localStorage.getItem('tally_repair_jobs')) || [];
+            const amcs = JSON.parse(localStorage.getItem('hardware_sync_amc')) || [];
+            const nonAmcCalls = JSON.parse(localStorage.getItem('tally_non_amc_calls')) || [];
+
+            // Blank days before month starts
+            for (let i = 0; i < firstDay; i++) {
+                const div = document.createElement('div');
+                div.className = 'calendar-day';
+                div.style.opacity = '0.2';
+                grid.appendChild(div);
+            }
+
+            // Actual days
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dayDiv = document.createElement('div');
+                dayDiv.className = 'calendar-day';
+                const dateStr = `${currentYear}-${String(currentMonth + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+                
+                if (new Date().toDateString() === new Date(currentYear, currentMonth, d).toDateString()) {
+                    dayDiv.classList.add('today');
+                }
+
+                dayDiv.innerHTML = `<div class="day-number">${d}</div>`;
+
+                // Add Repairs (Delivery)
+                repairs.filter(j => j.createdAt.includes(new Date(currentYear, currentMonth, d).toLocaleDateString()))
+                    .forEach(j => {
+                        dayDiv.innerHTML += `<div class="event-dot event-repair" title="Repair: ${j.customerName}">🛠️ ${j.deviceType}</div>`;
+                    });
+
+                // Add AMC Service Visits
+                amcs.forEach(amc => {
+                    const current = new Date(currentYear, currentMonth, d);
+                    const isNextService = amc.nextServiceDate && new Date(amc.nextServiceDate).toDateString() === current.toDateString();
+                    
+                    // Fallback to 90-day calculation if no explicit next service is set
+                    const start = new Date(amc.startDate);
+                    const diffTime = Math.abs(current - start);
+                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                    const isRecurringService = !amc.nextServiceDate && (diffDays % 90 === 0 && current >= start);
+
+                    if ((isNextService || isRecurringService) && current <= new Date(amc.endDate)) {
+                        dayDiv.innerHTML += `<div class="event-dot event-amc" title="AMC Service: ${amc.orgName}">🛡️ Service: ${amc.orgName.substring(0,6)}..</div>`;
+                    }
+                    
+                    // Contract Expiry
+                    if (new Date(amc.endDate).toDateString() === current.toDateString()) {
+                        dayDiv.innerHTML += `<div class="event-dot event-expiry" title="AMC EXPIRES TODAY: ${amc.orgName}">⚠️ EXPIRES: ${amc.orgName}</div>`;
+                    }
+                });
+
+                // Add Non-AMC Service Visits (Orange)
+                nonAmcCalls.filter(v => {
+                    const vDate = new Date(v.date);
+                    return vDate.getDate() === d && vDate.getMonth() === currentMonth && vDate.getFullYear() === currentYear;
+                }).forEach(v => {
+                    dayDiv.innerHTML += `<div class="event-dot event-non-amc" title="Non-AMC Visit: ${v.customerName}">🔸 ${v.customerName.substring(0,8)}..</div>`;
+                });
+
+                grid.appendChild(dayDiv);
+            }
+        }
+
+        function nextMonth() { currentMonth++; if(currentMonth>11){currentMonth=0; currentYear++} renderCalendar(); }
+        function prevMonth() { currentMonth--; if(currentMonth<0){currentMonth=11; currentYear--} renderCalendar(); }
+
+        document.addEventListener('DOMContentLoaded', renderCalendar);
+    </script>
+</body>
+</html>
